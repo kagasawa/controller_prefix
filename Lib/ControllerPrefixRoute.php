@@ -1,4 +1,6 @@
 <?php
+App::uses('CakeRoute', 'Routing/Route');
+
 class ControllerPrefixRoute extends CakeRoute {
 
     /**
@@ -7,7 +9,8 @@ class ControllerPrefixRoute extends CakeRoute {
      * @param $url
      * @return
      */
-    function parse($url){
+    public function parse($url){
+        
         if (preg_match('#^/' . $this->defaults['controllerPrefix'] . '/([^/:]+)/(.+)#', $url, $matches)) {
             $c = 'admin/' . $matches[1];
             if (preg_match('#^/' . $c . '(/?)([^/]*)/?(.*)#', $url, $matches)) {
@@ -30,6 +33,7 @@ class ControllerPrefixRoute extends CakeRoute {
         if (is_array($route)) {
                 $route['controller'] = $this->defaults['controllerPrefix'] . '_' . $route['controller'];
         }
+        
         return $route;
     }
 
@@ -39,10 +43,13 @@ class ControllerPrefixRoute extends CakeRoute {
      * @param $url
      * @return
      */
-    function match($url){
+    public function match($url){
+        
         if (preg_match('/^' . $this->defaults['controllerPrefix'] . '_/', $url['controller'])) {
-            $instance =& Router::getInstance();
-            $separator = $instance->named['separator'];
+            
+            $connectNamed = Router::connectNamed(false);
+            $separator = $connectNamed['separator'];
+            
             $url['controller'] = preg_replace('/^' . $this->defaults['controllerPrefix'] . '_/', '', $url['controller']);
 
             $u = '/' . $this->defaults['controllerPrefix'] . '/' . $url['controller'];
